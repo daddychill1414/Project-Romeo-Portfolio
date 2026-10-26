@@ -389,15 +389,14 @@ export default function HomePage() {
         });
 
         /* ==========================================
-           7. SUPPORT SECTION — SEQUENTIAL FLIP-IN
+           7. SUPPORT SECTION — CLEAN ENTRANCE
            ========================================== */
         gsap.from(".support__card", {
-          rotateY: 45,
           opacity: 0,
-          y: 40,
-          duration: 0.9,
-          stagger: 0.18,
-          ease: "power3.out",
+          y: 35,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "power2.out",
           scrollTrigger: {
             trigger: ".support__grid",
             start: "top 80%",
