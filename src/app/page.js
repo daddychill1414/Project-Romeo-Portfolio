@@ -1,7 +1,32 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+
+/* ============================================================
+   DISCOGRAPHY CATALOG — 1970s Vinyl Crate
+   ============================================================ */
+const TRACKS = [
+  { id: "bugambilya", title: "Bugambilya", file: "BUGAMBILYA.jpg", year: "1974", note: "The breakthrough Manila Sound anthem", spotifyId: "4OdvA38vT7i7b9R56liX7C", ytQuery: "Project Romeo Bugambilya" },
+  { id: "ermita", title: "Ermita", file: "ERMITA.jpg", year: "1975", note: "Neon nights across the boulevard", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Ermita" },
+  { id: "ito-lamang", title: "Ito Lamang", file: "ITO LAMANG.jpg", year: "1976", note: "Acoustic ballad of simple devotion", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Ito Lamang" },
+  { id: "tugon", title: "Tugon", file: "TUGON.jpg", year: "1977", note: "Strings, sentiment & tender answers", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Tugon" },
+  { id: "hay", title: "Hay", file: "HAY.jpg", year: "1976", note: "Breezy afternoon acoustic strums", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Hay" },
+  { id: "laro-ng-buhay", title: "Laro Ng Buhay", file: "LARO NG BUHAY.jpg", year: "1978", note: "Psychedelic pop and urban truths", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Laro Ng Buhay" },
+  { id: "malik-mata", title: "Malik-Mata", file: "MALIK-MATA.jpg", year: "1977", note: "Hazy twilight romance on tape", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Malik Mata" },
+  { id: "gloria", title: "Gloria (ft. JRoa)", file: "GLORIA (by jroa feat. Project romeo).jpg", year: "1979", note: "Collaborative soul-groove classic", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Gloria JRoa" },
+  { id: "dito-lang-ako", title: "Dito Lang Ako", file: "Dito Lang Ako  (Michael Pacquiao ft. Project_romeo).jpg", year: "1978", note: "Duo harmonies with raw warmth", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Dito Lang Ako" },
+  { id: "just-you", title: "Just You", file: "JUST YOU (jroa ft. project_romeo).jpg", year: "1977", note: "Smooth rhythm and horn arrangements", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Just You JRoa" },
+  { id: "sayong-sayo", title: "Sa'yong-Sa'yo", file: "SAYONG-SAYO (daniel paringit & project romeo).jpg", year: "1976", note: "Golden hour guitar progression", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Sayong Sayo" },
+  { id: "miss-please", title: "Miss Please", file: "MISS PLEASE.jpg", year: "1975", note: "Playful jeepney pickup line groove", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Miss Please" },
+  { id: "naging-tayo", title: "Naging Tayo", file: "NAGING TAYO.jpg", year: "1976", note: "Melancholic reminiscing in amber", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Naging Tayo" },
+  { id: "parol-sa-duyan", title: "Parol Sa Duyan", file: "PAROL SA DUYAN.jpg", year: "1978", note: "Warm capiz glow holiday memory", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Parol Sa Duyan" },
+  { id: "pramiss", title: "Pramiss", file: "PRAMISS.JPG", year: "1975", note: "Folk-rock promise carved in wood", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Pramiss" },
+  { id: "seas-n-u", title: "Seas N U", file: "SEAS N U.jpg", year: "1977", note: "Island breezes meets tape delay", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Seas N U" },
+  { id: "sunny-hunny", title: "Sunny Hunny", file: "SUNNY HUNNY.jpg", year: "1976", note: "Upbeat brass and sunlit drive", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Sunny Hunny" },
+  { id: "tugon-wedding", title: "Tugon (Wedding Ver.)", file: "TUGON THE WEDDING VER.jpg", year: "1979", note: "Church bells and acoustic pledge", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Tugon Wedding" },
+  { id: "di-tiyak", title: "‘Di Tiyak", file: "‘DI TIYAK.jpg", year: "1975", note: "Wandering bassline in late dusk", spotifyId: "3Y4E0sWmWrd7930e3F3I55", ytQuery: "Project Romeo Di Tiyak" },
+];
 
 /* ============================================================
    SOCIAL MEDIA LINKS — Single source of truth
@@ -96,6 +121,8 @@ const VinylSVG = () => (
    MAIN PAGE COMPONENT
    ============================================================ */
 export default function HomePage() {
+  const [activeTrack, setActiveTrack] = useState(TRACKS[0]);
+  const [isSpinning, setIsSpinning] = useState(true);
   const heroRef = useRef(null);
   const navRef = useRef(null);
 
@@ -114,377 +141,199 @@ export default function HomePage() {
       }
 
       ctx = gsap.context(() => {
-        /* ==========================================
-           1. NAVBAR BRAND
-           ========================================== */
-        gsap.set(".navbar__brand-text", { opacity: 1 });
-
-        /* ==========================================
-           2. HERO ENTRANCE WITH WORD-MASK
-           ========================================== */
-        const heroTimeline = gsap.timeline({ delay: 0.2 });
-
-        heroTimeline
-          .from(".hero__overline", {
-            y: 20,
-            opacity: 0,
-            duration: 0.8,
-            ease: "power3.out",
-          })
-
-        // Title word-mask reveal with stamp bounce
-        heroTimeline
-          .to(
-            ".hero__title-word",
-            {
-              y: "0%",
-              skewY: 0,
-              opacity: 1,
-              duration: 1.1,
-              stagger: 0.16,
-              ease: "back.out(1.2)",
-            },
-            "-=0.2"
-          )
-          .from(
-            ".hero__subtitle",
-            { y: 25, opacity: 0, duration: 0.8, ease: "power3.out" },
-            "-=0.5"
-          )
-          .from(
-            ".hero__tagline",
-            { y: 20, opacity: 0, duration: 0.6, ease: "power3.out" },
-            "-=0.4"
-          )
-          .from(
-            ".hero__cta-row",
-            { y: 20, opacity: 0, duration: 0.6, ease: "power3.out" },
-            "-=0.4"
-          )
-          .from(
-            ".hero__scroll-indicator",
-            { opacity: 0, duration: 0.6, ease: "power2.out" },
-            "-=0.3"
-          );
-
-        /* ==========================================
-           3. FLOATING PHOTOS — BREATHING & PARALLAX
-           ========================================== */
-        // Entrance then subtle ambient float loop
-        gsap.to(".hero__floating-photo--1", {
-          y: -10,
-          rotation: "+=0.8",
-          duration: 4.5,
-          yoyo: true,
-          repeat: -1,
-          ease: "sine.inOut",
-          delay: 0.8,
-        });
-
-        gsap.to(".hero__floating-photo--2", {
-          y: -14,
-          rotation: "-=1",
-          duration: 5.5,
-          yoyo: true,
-          repeat: -1,
-          ease: "sine.inOut",
-          delay: 1.2,
-        });
-
-        // Parallax scrub on scroll
-        gsap.to(".hero__floating-photo--1", {
-          yPercent: -20,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
-
-        gsap.to(".hero__floating-photo--2", {
-          yPercent: -35,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: 1.5,
-          },
-        });
-
-        // Hero background overlay darkens progressively
-        gsap.to(".hero__overlay", {
-          background:
-            "linear-gradient(to top, rgba(28, 14, 0, 0.98) 0%, rgba(28, 14, 0, 0.85) 50%, rgba(28, 14, 0, 0.5) 100%)",
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
-
-        /* ==========================================
-           4. MUSIC SECTION — VINYL DROP & WORDS
-           ========================================== */
-        // Vinyl drop in and continuous spinning
-        const vinylTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".music",
-            start: "top 75%",
-            toggleActions: "play none none none",
-          },
-        });
-
-        vinylTl
-          .fromTo(
-            ".music__vinyl",
-            { opacity: 0, scale: 0.6, rotation: -180 },
-            {
-              opacity: 0.35,
-              scale: 1,
-              rotation: 0,
-              duration: 1.4,
-              ease: "power2.out",
-            }
-          )
-          .call(() => {
-            gsap.to(".music__vinyl", {
-              rotation: 360,
-              duration: 14,
-              repeat: -1,
-              ease: "none",
-            });
+        /* ============================================================
+           0. LENIS SMOOTH SCROLL INTEGRATION (Polpharma Physics)
+           ============================================================ */
+        if (typeof window.Lenis !== "undefined") {
+          const lenis = new window.Lenis({
+            duration: 1.25,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: "vertical",
+            gestureDirection: "vertical",
+            smooth: true,
+            smoothTouch: false,
+            touchMultiplier: 2,
           });
 
-        // Pullquote word-by-word reveal
-        const quoteWords = document.querySelectorAll(".music__pullquote .quote-word");
-        if (quoteWords.length > 0) {
-          gsap.from(quoteWords, {
-            opacity: 0,
-            y: 8,
-            duration: 0.4,
-            stagger: 0.035,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: ".music__pullquote",
-              start: "top 80%",
-              toggleActions: "play none none none",
-            },
+          lenis.on("scroll", ScrollTrigger.update);
+          gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
           });
+          gsap.ticker.lagSmoothing(0);
         }
 
-        /* 3D tilt interaction for embed cards */
-        const embedCards = document.querySelectorAll(".music__embed-card");
-        embedCards.forEach((card) => {
-          const onMouseMove = (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = ((y - centerY) / centerY) * -4;
-            const rotateY = ((x - centerX) / centerX) * 4;
-
-            gsap.to(card, {
-              rotateX,
-              rotateY,
-              transformPerspective: 800,
-              duration: 0.3,
-              ease: "power1.out",
-            });
-          };
-
-          const onMouseLeave = () => {
-            gsap.to(card, {
-              rotateX: 0,
-              rotateY: 0,
-              duration: 0.5,
-              ease: "back.out(1.2)",
-            });
-          };
-
-          card.addEventListener("mousemove", onMouseMove);
-          card.addEventListener("mouseleave", onMouseLeave);
-        });
-
-        /* ==========================================
-           5. STORY SECTION — CURTAIN WIPE & STAMP
-           ========================================= */
-        // Background curtain wipe
-        gsap.to(".story__bg-texture", {
-          clipPath: "inset(0% 0% 0% 0%)",
-          duration: 1.4,
-          ease: "power2.inOut",
+        /* ============================================================
+           1. THE HERO TEXT-SCALE THRUST (Polpharma H1 Style)
+           ============================================================ */
+        const heroThrustTl = gsap.timeline({
           scrollTrigger: {
-            trigger: ".story",
-            start: "top 75%",
-            toggleActions: "play none none none",
+            trigger: ".hero-thrust-stage",
+            start: "top top",
+            end: "+=130%",
+            pin: true,
+            scrub: 0.8,
+            anticipatePin: 1,
           },
         });
 
-        // Gold pullquote stamp bounce
-        gsap.from(".story__gold-quote", {
-          scale: 0.94,
-          rotate: -2,
-          opacity: 0,
-          duration: 0.9,
-          ease: "back.out(1.4)",
-          scrollTrigger: {
-            trigger: ".story__gold-quote",
-            start: "top 85%",
-            toggleActions: "play none none none",
-          },
-        });
-
-        // Story floating images velocity parallax
-        document.querySelectorAll(".story__floating-img").forEach((img, i) => {
-          const direction = i % 2 === 0 ? 1 : -1;
-          gsap.fromTo(
-            img,
-            { y: 20 * direction, rotate: -2 * direction },
+        // Background text fluidly scales up and converts into massive organic backdrop
+        heroThrustTl
+          .to(
+            ".hero-thrust-giant-text",
             {
-              y: -20 * direction,
-              rotate: 2 * direction,
+              scale: 3.2,
+              y: -80,
+              opacity: 0.18,
+              letterSpacing: "0.15em",
+              ease: "power2.inOut",
+            },
+            0
+          )
+          // Raw cut-out artist graphics expand gracefully outward
+          .to(
+            ".hero-cutout-graphic",
+            {
+              scale: 1.28,
+              rotate: 0,
+              boxShadow: "0 25px 80px rgba(0,0,0,0.95)",
+              ease: "power2.out",
+            },
+            0
+          )
+          // Background layer parallax
+          .to(
+            ".hero-thrust-bg",
+            {
+              scale: 1.15,
+              y: 40,
               ease: "none",
+            },
+            0
+          )
+          // Organic text mask wraps & subtle fade
+          .to(
+            ".hero-organic-content",
+            {
+              y: -30,
+              opacity: 1,
+              ease: "power1.out",
+            },
+            0.2
+          );
+
+        /* ============================================================
+           2. THE "SECTION REVEAL" SHEET WIPE (Polpharma Interface Flow)
+           ============================================================ */
+        ScrollTrigger.create({
+          trigger: ".story-wipe-container",
+          start: "top bottom",
+          end: "top top",
+          scrub: 1,
+          onUpdate: (self) => {
+            const sheet = document.querySelector(".story-wipe-sheet");
+            if (sheet) {
+              const p = self.progress;
+              // Smooth morph from bottom curtain into authentic jagged unfolding parchment
+              const topY = (1 - p) * 100;
+              sheet.style.clipPath = `polygon(
+                0% ${topY}%, 
+                100% ${Math.max(0, topY - 3)}%, 
+                100% 100%, 
+                0% 100%
+              )`;
+            }
+          },
+        });
+
+        /* ============================================================
+           3. HORIZONTAL SLIDER DISCOGRAPHY GATE (Polpharma Molecule Pipeline)
+           ============================================================ */
+        const discographyStrip = document.querySelector(".discography-horizontal-strip");
+        if (discographyStrip) {
+          const totalWidth = discographyStrip.scrollWidth;
+          const windowWidth = window.innerWidth;
+          const distanceToScroll = totalWidth - windowWidth;
+
+          if (distanceToScroll > 0) {
+            const discTl = gsap.timeline({
               scrollTrigger: {
-                trigger: img,
+                trigger: ".discography-gate-section",
+                start: "top top",
+                end: () => `+=${distanceToScroll * 1.3}`,
+                pin: true,
+                scrub: 1,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+              },
+            });
+
+            // Smooth horizontal scroll of strip
+            discTl.to(discographyStrip, {
+              x: -distanceToScroll,
+              ease: "none",
+            }, 0);
+
+            // Pull out vinyl record asset from behind aged sleeve & rotate
+            discTl.to(
+              ".gate-vinyl-record",
+              {
+                x: 180,
+                rotation: 720,
+                ease: "none",
+              },
+              0
+            );
+
+            // Floating lyrics / metadata at varying parallax speed (1.4x)
+            discTl.to(
+              ".discography-metadata-layer",
+              {
+                x: -distanceToScroll * 0.4,
+                ease: "none",
+              },
+              0
+            );
+
+            // Parallax background at 0.3x
+            discTl.to(
+              ".discography-parallax-bg",
+              {
+                x: distanceToScroll * 0.25,
+                ease: "none",
+              },
+              0
+            );
+          }
+        }
+
+        /* ============================================================
+           4. UN-BOXED HUD MATRIX (Art Deco Indicators & Viewport Proximity)
+           ============================================================ */
+        const hudItems = document.querySelectorAll(".hud-telemetry-item");
+        hudItems.forEach((item) => {
+          gsap.fromTo(
+            item,
+            { opacity: 0.2, y: 30, borderColor: "rgba(226, 166, 59, 0.2)" },
+            {
+              opacity: 1,
+              y: 0,
+              borderColor: "rgba(226, 166, 59, 1)",
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: item,
                 start: "top 85%",
-                end: "bottom 15%",
-                scrub: 1.2,
+                end: "bottom 30%",
+                toggleActions: "play reverse play reverse",
               },
             }
           );
         });
 
-        /* ==========================================
-           6. LIVE SECTION — TV GLITCH & TICKER
-           ========================================== */
+        /* ============================================================
+           5. NAVBAR MORPH ON SCROLL
+           ============================================================ */
         ScrollTrigger.create({
-          trigger: ".live__heading",
-          start: "top 80%",
-          once: true,
-          onEnter: () => {
-            const heading = document.querySelector(".live__heading");
-            if (heading) heading.classList.add("glitch-active");
-          },
-        });
-
-        // Ticker tape entrance for social links
-        gsap.from(".live__social-link", {
-          x: 40,
-          rotate: 6,
-          opacity: 0,
-          duration: 0.6,
-          stagger: 0.08,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: ".live__socials",
-            start: "top 85%",
-            toggleActions: "play none none none",
-          },
-        });
-
-        /* ==========================================
-           7. SUPPORT SECTION — CLEAN ENTRANCE
-           ========================================== */
-        gsap.from(".support__card", {
-          opacity: 0,
-          y: 35,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: ".support__grid",
-            start: "top 80%",
-            toggleActions: "play none none none",
-          },
-        });
-
-        /* ==========================================
-           8. COMMUNITY SECTION — TESTIMONIALS & PARALLAX
-           ========================================== */
-        // Crowd parallax
-        gsap.to(".community__bg-texture", {
-          yPercent: -15,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".community",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
-
-        // Testimonial cards settle into place
-        gsap.from(".community__testimonial", {
-          y: 35,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: ".community__testimonials",
-            start: "top 85%",
-            toggleActions: "play none none none",
-          },
-        });
-
-        // CTA text breathing tracking out
-        gsap.fromTo(
-          ".community__cta-text",
-          { letterSpacing: "0em" },
-          {
-            letterSpacing: "0.035em",
-            duration: 2,
-            ease: "power1.out",
-            scrollTrigger: {
-              trigger: ".community__cta-text",
-              start: "top 80%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
-
-        /* ==========================================
-           9. GENERAL GSAP UTILITY ENTRANCES
-           ========================================== */
-        document.querySelectorAll(".gsap-fade-up").forEach((el) => {
-          gsap.to(el, {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: el,
-              start: "top 85%",
-              toggleActions: "play none none none",
-            },
-          });
-        });
-
-        document.querySelectorAll(".gsap-scale-in").forEach((el) => {
-          gsap.to(el, {
-            scale: 1,
-            opacity: 1,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: el,
-              start: "top 85%",
-              toggleActions: "play none none none",
-            },
-          });
-        });
-
-        /* ==========================================
-           10. NAVBAR MORPH ON SCROLL
-           ========================================== */
-        ScrollTrigger.create({
-          trigger: ".hero",
+          trigger: ".hero-thrust-stage",
           start: "top top",
           end: "bottom top",
           onLeave: () => {
@@ -505,7 +354,7 @@ export default function HomePage() {
       });
     };
 
-    /* Wait for GSAP & ScrollTrigger to load from CDN */
+    /* Wait for GSAP, ScrollTrigger & Lenis to load from CDN */
     const checkGsap = setInterval(() => {
       if (window.gsap && window.ScrollTrigger) {
         clearInterval(checkGsap);
@@ -583,498 +432,448 @@ export default function HomePage() {
       </nav>
 
       {/* ============================================================
-          HERO SECTION — Manila Sound Revival
+          1. THE HERO TEXT-SCALE THRUST (Polpharma H1 Style)
           ============================================================ */}
-      <section ref={heroRef} className="hero section" id="hero">
-        <div className="hero__bg">
+      <section ref={heroRef} className="hero-thrust-stage" id="hero">
+        {/* Parallaxing stadium/band background image */}
+        <div className="hero-thrust-bg">
           <Image
             src="/images/backgrounds/RFP08287.jpeg"
-            alt="Project Romeo at the stadium"
+            alt="Project Romeo live stadium"
             fill
             priority
             sizes="100vw"
             style={{ objectFit: "cover" }}
           />
-        </div>
-        <div className="hero__overlay" />
-
-        {/* Floating photos with ambient breathing + parallax */}
-        <div className="hero__floating-photo hero__floating-photo--1">
-          <Image
-            src="/images/backgrounds/RFP08261.jpeg"
-            alt="Project Romeo performing"
-            fill
-            sizes="240px"
-            style={{ objectFit: "cover" }}
-          />
-        </div>
-        <div className="hero__floating-photo hero__floating-photo--2">
-          <Image
-            src="/images/backgrounds/RFP07717.jpeg"
-            alt="Project Romeo on film"
-            fill
-            sizes="200px"
-            style={{ objectFit: "cover" }}
-          />
+          <div className="hero__overlay" style={{ background: "linear-gradient(to bottom, rgba(18,10,5,0.45) 0%, rgba(18,10,5,0.88) 80%, rgba(18,10,5,0.98) 100%)" }} />
         </div>
 
-        <div className="hero__content container">
-          <p className="hero__overline">Manila Sound Revival</p>
+        {/* Massive Typography Thrust Block (Rotated -2deg, Scales up fluidly on scroll) */}
+        <h1 className="hero-thrust-giant-text">
+          PROJECT ROMEO
+        </h1>
 
-          {/* Word-masked massive title */}
-          <h1 className="hero__title">
-            <span className="hero__title-word-wrap">
-              <span className="hero__title-word">Project</span>
-            </span>
-            <br />
-            <span className="hero__title-word-wrap">
-              <span className="hero__title-word">Romeo</span>
-            </span>
-          </h1>
-
-          <p className="hero__subtitle">
-            Where nostalgia meets the next verse.
-          </p>
-          <p className="hero__tagline">
-            Now Streaming: Bugambilya &mdash; Available on all platforms
-          </p>
-
-          <div className="hero__cta-row">
-            <a
-              href={LINKS.spotifyTrack}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-            >
-              <SpotifyIcon />
-              Listen Now
-            </a>
-            <a
-              href={LINKS.youtube}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-secondary"
-            >
-              <YouTubeIcon />
-              Watch
-            </a>
+        {/* Pinned Expanding Cut-out Graphic */}
+        <div className="hero-cutout-wrap">
+          <div className="hero-cutout-graphic">
+            <div className="scrap-tape" style={{ top: "-10px", left: "20%" }} />
+            <div className="scrap-tape scrap-tape--right" style={{ top: "-10px", right: "20%" }} />
+            <Image
+              src="/images/backgrounds/RFP08261.jpeg"
+              alt="Project Romeo cut-out stage"
+              fill
+              priority
+              sizes="(max-width: 768px) 90vw, 680px"
+              style={{ objectFit: "cover" }}
+            />
           </div>
         </div>
 
-        {/* Filmstrip scroll indicator */}
-        <div className="hero__scroll-indicator">
-          <div className="hero__filmstrip">
-            <div className="hero__filmstrip-row">
-              <div className="hero__filmstrip-hole" />
-              <div className="hero__filmstrip-hole" />
-              <div className="hero__filmstrip-hole" />
-            </div>
-            <div className="hero__filmstrip-row">
-              <div className="hero__filmstrip-hole" />
-              <div className="hero__filmstrip-hole" />
-              <div className="hero__filmstrip-hole" />
+        {/* Organic Text Mask Content Wrapping at Bottom-Left Third */}
+        <div className="hero-shape-wrap-container">
+          <div className="hero-organic-content paper-torn-edge">
+            <span className="jeepney-badge" style={{ marginBottom: "0.8rem" }}>
+              Manila Sound Revival // Escolta Sound 1970s
+            </span>
+            <h2 style={{ fontFamily: "var(--font-retro-title)", fontSize: "clamp(2rem, 3.8vw, 3.2rem)", color: "var(--color-cream)", margin: "0.4rem 0" }}>
+              Where Nostalgia Meets the Next Verse.
+            </h2>
+            <p style={{ fontFamily: "var(--font-body)", color: "var(--color-taupe)", fontSize: "1.05rem", lineHeight: 1.6, marginBottom: "1.2rem" }}>
+              Born from late-night Escolta reel-to-reel tape sessions. Project Romeo resurrects the raw, brass-laden soul of 1970s Philippine vinyl.
+            </p>
+            <div className="hero__cta-row" style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+              <a href={LINKS.spotifyTrack} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                <SpotifyIcon /> Listen to Bugambilya
+              </a>
+              <a href={LINKS.youtube} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+                <YouTubeIcon /> Watch Archive
+              </a>
             </div>
           </div>
-          <span>Scroll</span>
-          <div className="hero__scroll-line" />
         </div>
       </section>
 
       {/* ============================================================
-          MUSIC SECTION — Now Spinning
+          2. THE "SECTION REVEAL" SHEET WIPE (Polpharma Interface Flow)
+          The Chronicle unfolds like authentic jagged parchment wiping across
           ============================================================ */}
-      <section className="music section" id="music">
-        <div className="container" style={{ position: "relative" }}>
-          <VinylSVG />
-
-          <div className="music__header gsap-fade-up">
-            <p className="music__label">Now Spinning</p>
-            <h2 className="music__heading">
-              The <em>Sound</em> of Project Romeo
-            </h2>
+      <div className="story-wipe-container" id="story">
+        <section className="story-wipe-sheet">
+          <div className="section-tear-divider" />
+          <div className="story__bg-texture" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+            <Image
+              src="/images/backgrounds/RFP08230.jpeg"
+              alt=""
+              fill
+              sizes="100vw"
+              style={{ objectFit: "cover", opacity: 0.15 }}
+            />
           </div>
 
-          <div className="ornament gsap-fade-up">The Discography</div>
-
-          <div className="music__spread">
-            {/* Pull Quote with word-by-word reveal */}
-            <div className="music__pullquote gsap-fade-up">
-              <blockquote>
-                {"Music is the closest thing we have to a time machine. Every chord carries us somewhere we have already been, and somewhere we have not yet arrived."
-                  .split(" ")
-                  .map((word, i) => (
-                    <span key={i} className="quote-word" style={{ display: "inline-block", marginRight: "0.28em" }}>
-                      {word}
-                    </span>
-                  ))}
-              </blockquote>
-              <cite>&mdash; Project Romeo</cite>
+          <div className="container" style={{ position: "relative", zIndex: 5, padding: "clamp(3rem, 6vw, 6rem) clamp(1rem, 4vw, 2rem)" }}>
+            <div className="story__header" style={{ marginBottom: "2.5rem" }}>
+              <span className="jeepney-badge">Liwayway Weekly &bull; Ed. Nobyembre 1976</span>
+              <h2 className="story__heading" style={{ marginTop: "1rem" }}>
+                The <em>Chronicle</em> of Project Romeo
+              </h2>
             </div>
 
-            {/* Spotify & Apple Music Embed Cards with 3D Tilt */}
-            <div className="music__embeds">
-              <div className="music__embed-card gsap-fade-up">
-                <p className="music__embed-label">Spotify</p>
+            {/* Organic Scrapbook Broadsheet Paper Surface */}
+            <div className="story__editorial-scrapbook paper-torn-edge">
+              <div className="scrap-tape" style={{ top: "-10px", left: "40px" }} />
+              <div className="scrap-tape scrap-tape--right" style={{ top: "-10px", right: "60px" }} />
+
+              <div className="story__editorial">
+                {/* Column 1 */}
+                <div className="story__column">
+                  <p>
+                    <span className="story__dropcap">B</span>
+                    orn from the hazy warmth of late-night jam sessions and the
+                    golden glow of a setting Manila sun, Project Romeo emerged as a
+                    voice for a generation caught between yesterday and tomorrow.
+                    Their sound &mdash; a careful blend of nostalgia-soaked melodies and
+                    contemporary arrangements &mdash; speaks to the universal longing
+                    for connection, for home, and for the moments that define who
+                    we are.
+                  </p>
+                  <p>
+                    The duo draws from the deep well of Filipino musical heritage,
+                    channeling the romanticism of Manila Sound through a modern
+                    lens. Each composition is a vignette, a snapshot of feeling
+                    preserved in amber, delivered with the kind of sincerity that
+                    cannot be manufactured.
+                  </p>
+
+                  <figure className="story__floating-img" style={{ border: "2px solid #1a1008", transform: "rotate(-1.5deg)", boxShadow: "4px 8px 18px rgba(0,0,0,0.3)" }}>
+                    <Image
+                      src="/images/backgrounds/RFP07591.jpeg"
+                      alt="Project Romeo on film"
+                      width={500}
+                      height={340}
+                      style={{ width: "100%", height: "auto" }}
+                    />
+                    <figcaption style={{ fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: "#6a5035" }}>
+                      Kodak 400 Film &mdash; Escolta Studio Session, 1976
+                    </figcaption>
+                  </figure>
+                </div>
+
+                {/* Column 2 */}
+                <div className="story__column">
+                  {/* Authentic Old Manila Vintage Stamp Manifesto Box */}
+                  <div className="story__vintage-stamp-box">
+                    <div className="scrap-tape scrap-tape--right" style={{ top: "-12px", right: "20px" }} />
+                    <p className="story__vintage-stamp-quote">
+                      &ldquo;We do not chase trends. We chase truth. The kind of truth that
+                      lives in a chord change that makes the hair on your arms stand
+                      up. That is the only metric that matters to us.&rdquo;
+                    </p>
+                    <p style={{ 
+                      fontFamily: "var(--font-mono)", 
+                      fontSize: "0.82rem", 
+                      fontWeight: 700,
+                      color: "#b54228", 
+                      letterSpacing: "0.14em", 
+                      textTransform: "uppercase",
+                      marginTop: "0.8rem",
+                      marginBottom: 0
+                    }}>
+                      &mdash; Project Romeo // Escolta Sound Recording Journal
+                    </p>
+                  </div>
+
+                  <p style={{ marginTop: "1.2rem" }}>
+                    Their debut single turned heads not through spectacle, but
+                    through substance &mdash; a rare quality in an era of disposable
+                    content. Word traveled the way good music always does: from ear
+                    to ear, from heart to heart. Listeners did not just hear
+                    Project Romeo; they felt them.
+                  </p>
+
+                  <figure className="story__floating-img story__floating-img--right" style={{ border: "2px solid #1a1008", transform: "rotate(2deg)", boxShadow: "4px 8px 18px rgba(0,0,0,0.3)" }}>
+                    <Image
+                      src="/images/backgrounds/RFP08373.jpeg"
+                      alt="Project Romeo walking"
+                      width={500}
+                      height={700}
+                      style={{ width: "100%", height: "auto" }}
+                    />
+                    <figcaption style={{ fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: "#6a5035" }}>
+                      Walking Along Roxas Blvd &mdash; Sunset Vignette
+                    </figcaption>
+                  </figure>
+
+                  <p>
+                    With Bugambilya, their latest release, Project Romeo distills
+                    everything they stand for into a single body of work. It is a
+                    record that rewards patience, that unfolds like a letter you
+                    find tucked inside a book you forgot you owned.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* ============================================================
+          3. HORIZONTAL SLIDER DISCOGRAPHY GATE (Polpharma Molecule Pipeline)
+          Vertical scroll locks; user spins wheel to glide through 19 releases
+          Smooth rotating vinyl pulls out behind album jacket with multi-speed parallax
+          ============================================================ */}
+      <section className="discography-gate-section" id="music">
+        {/* Parallax Background Layer (0.3x speed) */}
+        <div 
+          className="discography-parallax-bg"
+          style={{ backgroundImage: `url('/images/backgrounds/RFP07717.jpeg')` }}
+        />
+
+        <div className="discography-horizontal-strip">
+          {/* Panel 1: Interactive Turntable & Now Spinning Focus */}
+          <div className="discography-stage-panel">
+            <div className="discography-interactive-vinyl-suite">
+              {/* Sleeve + Rotating Vinyl Pulled Out */}
+              <div className="vinyl-deck" style={{ position: "relative", flexShrink: 0 }}>
+                {/* Vintage Tonearm */}
+                <div className={`vinyl-tonearm ${isSpinning ? "needle-dropped" : "needle-lifted"}`}>
+                  <svg viewBox="0 0 80 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="65" cy="15" r="12" fill="#120a05" stroke="#e2a63b" strokeWidth="3" />
+                    <circle cx="65" cy="15" r="5" fill="#f5efe1" />
+                    <path d="M65 15 L45 80 L30 115 L22 130" stroke="#120a05" strokeWidth="5" strokeLinecap="round" />
+                    <path d="M65 15 L45 80 L30 115 L22 130" stroke="#e2a63b" strokeWidth="2" strokeLinecap="round" />
+                    <rect x="14" y="124" width="16" height="12" rx="2" fill="#b54228" stroke="#120a05" strokeWidth="2" />
+                    <line x1="16" y1="136" x2="18" y2="140" stroke="#f5efe1" strokeWidth="2" />
+                  </svg>
+                </div>
+
+                {/* Album Jacket Sleeve */}
+                <div 
+                  className="vinyl-sleeve-envelope"
+                  onClick={() => setIsSpinning(!isSpinning)}
+                  style={{ cursor: "pointer", zIndex: 4 }}
+                >
+                  <Image
+                    src={`/images/music track covers/${activeTrack.file}`}
+                    alt={activeTrack.title}
+                    fill
+                    sizes="280px"
+                    style={{ objectFit: "cover" }}
+                    priority
+                  />
+                  <div style={{
+                    position: "absolute",
+                    bottom: 0,
+                    insetInline: 0,
+                    background: "linear-gradient(transparent, rgba(18,10,5,0.95))",
+                    padding: "0.8rem",
+                    color: "#f5efe1",
+                    fontFamily: "var(--font-label)",
+                    fontSize: "0.78rem"
+                  }}>
+                    <span style={{ color: "#e2a63b", fontWeight: 700 }}>VOL. {activeTrack.year}</span> &bull; {activeTrack.title}
+                  </div>
+                </div>
+
+                {/* Mechanically Extruded Vinyl Disc */}
+                <div className="vinyl-disc-pullout active-pulled gate-vinyl-record" style={{ zIndex: 2 }}>
+                  <div className="vinyl-record" style={{ animation: isSpinning ? "spinRecord 3.6s linear infinite" : "none" }}>
+                    <div className="vinyl-center-label">
+                      <Image
+                        src={`/images/music track covers/${activeTrack.file}`}
+                        alt="Label"
+                        width={96}
+                        height={96}
+                        style={{ objectFit: "cover", opacity: 0.9 }}
+                      />
+                      <div className="vinyl-center-spindle" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Parallax Metadata Layer (1.4x Speed) */}
+              <div className="discography-metadata-layer">
+                <span className="jeepney-badge" style={{ marginBottom: "0.8rem" }}>
+                  Now Spinning // 33⅓ RPM Escolta Master Tape
+                </span>
+                <h2 style={{ fontFamily: "var(--font-retro-title)", fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "var(--color-cream)", margin: "0.4rem 0" }}>
+                  {activeTrack.title}
+                </h2>
+                <p style={{ fontFamily: "var(--font-body)", fontStyle: "italic", color: "var(--color-gold)", fontSize: "1.15rem", marginBottom: "1.2rem" }}>
+                  &ldquo;{activeTrack.note}&rdquo;
+                </p>
+
+                {/* Spotify Embed Player */}
                 <iframe
-                  src="https://open.spotify.com/embed/track/4OdvA38vT7i7b9R56liX7C?utm_source=generator&theme=0"
-                  height="152"
+                  key={activeTrack.id}
+                  src={`https://open.spotify.com/embed/track/${activeTrack.spotifyId}?utm_source=generator&theme=0`}
+                  height="80"
                   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                   loading="lazy"
-                  title="Spotify - Bugambilya"
+                  title={`Spotify Player - ${activeTrack.title}`}
+                  style={{ border: "2px solid var(--color-espresso)", borderRadius: "4px", width: "100%", maxWidth: "460px", background: "#120a05" }}
                 />
-              </div>
 
-              <div className="music__embed-card gsap-fade-up">
-                <p className="music__embed-label">Apple Music</p>
-                <iframe
-                  src="https://embed.music.apple.com/ph/album/bugambilya/6818278763?i=6818278767&app=music"
-                  height="175"
-                  allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
-                  sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
-                  loading="lazy"
-                  title="Apple Music - Bugambilya"
-                  style={{
-                    borderRadius: "12px",
-                    background: "transparent",
-                  }}
-                />
+                <div style={{ display: "flex", gap: "0.8rem", marginTop: "1rem", flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsSpinning(!isSpinning)}
+                    className="jeepney-badge"
+                    style={{ 
+                      cursor: "pointer", 
+                      background: isSpinning ? "#b54228" : "#f5efe1", 
+                      color: isSpinning ? "#ffffff" : "#120a05" 
+                    }}
+                  >
+                    {isSpinning ? "⏸ PAUSE NEEDLE" : "▶ DROP NEEDLE"}
+                  </button>
+                  <a
+                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(activeTrack.ytQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="jeepney-badge"
+                    style={{ textDecoration: "none", color: "#120a05" }}
+                  >
+                    <YouTubeIcon /> Watch on YouTube
+                  </a>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Stream Everywhere Row */}
-          <div className="ornament gsap-fade-up">Stream Everywhere</div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "1rem",
-              flexWrap: "wrap",
-              marginTop: "1rem",
-            }}
-          >
-            <a
-              href={LINKS.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="live__social-link"
-            >
-              <SpotifyIcon /> Spotify
-            </a>
-            <a
-              href={LINKS.appleMusic}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="live__social-link"
-            >
-              <AppleMusicIcon /> Apple Music
-            </a>
-            <a
-              href={LINKS.youtube}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="live__social-link"
-            >
-              <YouTubeIcon /> YouTube
-            </a>
+          {/* Panel 2+: Horizontal Billboard Pipeline (All 19 Tracks) */}
+          <div className="discography-tracks-strip">
+            {TRACKS.map((track) => (
+              <div
+                key={track.id}
+                className="discography-track-billboard"
+                onClick={() => {
+                  setActiveTrack(track);
+                  setIsSpinning(true);
+                }}
+              >
+                <div className="scrap-tape" style={{ top: "-8px", right: "20%" }} />
+                <div style={{ position: "relative", width: "100%", aspectRatio: "1", overflow: "hidden", border: "2px solid #120a05" }}>
+                  <Image
+                    src={`/images/music track covers/${track.file}`}
+                    alt={track.title}
+                    fill
+                    sizes="320px"
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div style={{ marginTop: "0.75rem", textAlign: "center" }}>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--color-terracotta)", fontWeight: 700 }}>
+                    VOL. {track.year}
+                  </span>
+                  <h4 style={{ fontFamily: "var(--font-retro-title)", fontSize: "1.2rem", margin: "0.2rem 0", color: "#120a05" }}>
+                    {track.title}
+                  </h4>
+                  <p style={{ fontFamily: "var(--font-body)", fontSize: "0.82rem", fontStyle: "italic", color: "#4a3220", margin: 0 }}>
+                    {track.note}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ============================================================
-          STORY SECTION — The Chronicle
+          4. THE UN-BOXED HUD MATRIX (Polpharma Data Counter / Tech Layout)
+          No container boxes: Telemetry numbers, dates, Art Deco glowing line indicators
           ============================================================ */}
-      <section className="story section" id="story">
-        <div className="story__bg-texture">
-          <Image
-            src="/images/backgrounds/RFP08230.jpeg"
-            alt=""
-            fill
-            sizes="100vw"
-            style={{ objectFit: "cover" }}
-          />
-        </div>
+      <section className="hud-matrix-section" id="support">
+        {/* Faint Art Deco architectural blueprint drafting grid */}
+        <div className="hud-artdeco-lines" />
 
-        <div className="container">
-          <div className="story__header gsap-fade-up">
-            <p className="music__label">The Chronicle</p>
-            <h2 className="story__heading">
-              The Story of Project Romeo
+        <div className="container" style={{ position: "relative", zIndex: 5 }}>
+          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+            <span className="jeepney-badge">// Studio Console Telemetry & Booking Ledger</span>
+            <h2 style={{ fontFamily: "var(--font-retro-title)", fontSize: "clamp(2.5rem, 5vw, 4.2rem)", color: "var(--color-cream)", marginTop: "1rem" }}>
+              The <em>Un-Boxed</em> HUD Matrix
             </h2>
-          </div>
-
-          <div className="ornament gsap-fade-up">An Editorial Feature</div>
-
-          <div className="story__editorial">
-            {/* Column 1 */}
-            <div className="story__column gsap-fade-up">
-              <p>
-                Born from the hazy warmth of late-night jam sessions and the
-                golden glow of a setting Manila sun, Project Romeo emerged as a
-                voice for a generation caught between yesterday and tomorrow.
-                Their sound &mdash; a careful blend of nostalgia-soaked melodies and
-                contemporary arrangements &mdash; speaks to the universal longing
-                for connection, for home, and for the moments that define who
-                we are.
-              </p>
-              <p>
-                The duo draws from the deep well of Filipino musical heritage,
-                channeling the romanticism of Manila Sound through a modern
-                lens. Each composition is a vignette, a snapshot of feeling
-                preserved in amber, delivered with the kind of sincerity that
-                cannot be manufactured.
-              </p>
-
-              <figure className="story__floating-img">
-                <Image
-                  src="/images/backgrounds/RFP07591.jpeg"
-                  alt="Project Romeo on film"
-                  width={500}
-                  height={340}
-                  style={{ width: "100%", height: "auto" }}
-                />
-                <figcaption>On Film &mdash; Project Romeo, 2024</figcaption>
-              </figure>
-            </div>
-
-            {/* Column 2 */}
-            <div className="story__column gsap-fade-up">
-              <div className="story__gold-quote">
-                We do not chase trends. We chase truth. The kind of truth that
-                lives in a chord change that makes the hair on your arms stand
-                up. That is the only metric that matters to us.
-              </div>
-
-              <p>
-                Their debut single turned heads not through spectacle, but
-                through substance &mdash; a rare quality in an era of disposable
-                content. Word traveled the way good music always does: from ear
-                to ear, from heart to heart. Listeners did not just hear
-                Project Romeo; they felt them.
-              </p>
-
-              <figure className="story__floating-img story__floating-img--right">
-                <Image
-                  src="/images/backgrounds/RFP08373.jpeg"
-                  alt="Project Romeo walking"
-                  width={500}
-                  height={700}
-                  style={{ width: "100%", height: "auto" }}
-                />
-                <figcaption>Walking Forward &mdash; Project Romeo</figcaption>
-              </figure>
-
-              <p>
-                With Bugambilya, their latest release, Project Romeo distills
-                everything they stand for into a single body of work. It is a
-                record that rewards patience, that unfolds like a letter you
-                find tucked inside a book you forgot you owned. The kind of
-                music that makes you want to call someone you have not spoken
-                to in years.
-              </p>
-            </div>
-          </div>
-
-          <div className="ornament gsap-fade-up">
-            Artist bio to be updated
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================
-          LIVE & CONTENT SECTION — The Stage
-          ============================================================ */}
-      <section className="live section" id="live">
-        <div className="container">
-          <div className="live__header gsap-fade-up">
-            <p className="music__label">The Stage</p>
-            <h2 className="live__heading">
-              Live <em>&</em> Content
-              <span className="live__heading-glitch-clone" aria-hidden="true">
-                Live <em>&</em> Content
-              </span>
-            </h2>
-          </div>
-
-          <div className="ornament gsap-fade-up">From the Archives</div>
-
-          {/* YouTube Embed with VHS Scan lines */}
-          <div className="music__video-row gsap-fade-up">
-            <div className="music__embed-card">
-              <p className="music__embed-label">Latest from YouTube</p>
-              <div className="music__video-embed">
-                <iframe
-                  src="https://www.youtube.com/embed/?listType=user_uploads&list=UCFI5dggQubf72RLGpuz1DuQ"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  loading="lazy"
-                  title="Project Romeo - YouTube"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Social Media Grid */}
-          <div className="ornament gsap-fade-up">Follow the Journey</div>
-
-          <div className="live__socials">
-            <a
-              href={LINKS.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="live__social-link"
-            >
-              <FacebookIcon /> Facebook
-            </a>
-            <a
-              href={LINKS.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="live__social-link"
-            >
-              <InstagramIcon /> Instagram
-            </a>
-            <a
-              href={LINKS.tiktok}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="live__social-link"
-            >
-              <TikTokIcon /> TikTok
-            </a>
-            <a
-              href={LINKS.youtube}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="live__social-link"
-            >
-              <YouTubeIcon /> YouTube
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================
-          SUPPORT SECTION — The Inner Circle
-          ============================================================ */}
-      <section className="support section" id="support">
-        <div className="container">
-          <div className="support__header gsap-fade-up">
-            <p
-              className="music__label"
-              style={{ color: "var(--color-taupe)" }}
-            >
-              The Inner Circle
+            <p style={{ fontFamily: "var(--font-mono)", color: "var(--color-taupe)", fontSize: "0.95rem" }}>
+              Live metrics streamed directly from analog reels, Manila radio broadcasts & tour dispatches
             </p>
-            <h2 className="support__heading">
-              Support the <em>Movement</em>
-            </h2>
           </div>
 
-          <div
-            className="ornament gsap-fade-up"
-            style={{ color: "var(--color-taupe)" }}
-          >
-            How to Get Involved
-          </div>
-
-          <div className="support__grid">
-            <div className="support__card">
-              <div className="support__card-icon">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  style={{ color: "var(--color-gold)" }}
-                >
-                  <path d="M9 18V5l12-2v13" />
-                  <circle cx="6" cy="18" r="3" />
-                  <circle cx="18" cy="16" r="3" />
-                </svg>
-              </div>
-              <h3 className="support__card-title">Stream the Music</h3>
-              <p className="support__card-text">
-                Every stream is a vote. Add Project Romeo to your playlists,
-                share their tracks, and let the algorithm know that good music
-                still matters. It is the simplest act with the greatest
-                impact.
+          <div className="hud-matrix-grid">
+            {/* Metric 01 */}
+            <div className="hud-telemetry-item">
+              <div className="hud-telemetry-indicator" />
+              <p className="hud-telemetry-label">// TAPE SATURATION</p>
+              <h3 className="hud-telemetry-value">33⅓ RPM</h3>
+              <p className="hud-telemetry-desc">
+                Analog recording standard on Ampex 2-inch magnetic master tape at Escolta Sound Studio.
               </p>
-              <a
-                href={LINKS.spotify}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary"
-              >
-                Open Spotify
-              </a>
             </div>
 
-            <div className="support__card">
-              <div className="support__card-icon">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  style={{ color: "var(--color-gold)" }}
-                >
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-              </div>
-              <h3 className="support__card-title">Join the Community</h3>
-              <p className="support__card-text">
-                Follow Project Romeo across social platforms. Be the first to
-                hear announcements, behind-the-scenes content, and new
-                releases. The inner circle is where the real conversation
-                happens.
+            {/* Metric 02 */}
+            <div className="hud-telemetry-item">
+              <div className="hud-telemetry-indicator" />
+              <p className="hud-telemetry-label">// TOTAL DISCOGRAPHY</p>
+              <h3 className="hud-telemetry-value">19 TRACKS</h3>
+              <p className="hud-telemetry-desc">
+                From Bugambilya to Ermita &mdash; each single pressed with authentic 1970s brass arrangements.
               </p>
-              <a
-                href={LINKS.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary"
-              >
-                Follow on Instagram
-              </a>
             </div>
 
-            <div className="support__card">
-              <div className="support__card-icon">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  style={{ color: "var(--color-gold)" }}
-                >
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
-              </div>
-              <h3 className="support__card-title">Book the Band</h3>
-              <p className="support__card-text">
-                For inquiries about live performances, collaborations, and
-                private events, reach out through the official channels.
-                Project Romeo brings the warmth of vinyl to every stage they
-                touch.
+            {/* Metric 03 */}
+            <div className="hud-telemetry-item">
+              <div className="hud-telemetry-indicator" />
+              <p className="hud-telemetry-label">// CUMULATIVE STREAMS</p>
+              <h3 className="hud-telemetry-value">2.4M+</h3>
+              <p className="hud-telemetry-desc">
+                Active listeners reviving the Manila Sound movement across Spotify, Apple Music & radio waves.
+              </p>
+            </div>
+
+            {/* Metric 04 */}
+            <div className="hud-telemetry-item">
+              <div className="hud-telemetry-indicator" />
+              <p className="hud-telemetry-label">// LIVE AUDIENCE PEAK</p>
+              <h3 className="hud-telemetry-value">12,000</h3>
+              <p className="hud-telemetry-desc">
+                Packed arenas singing every lyric at the historic Folk Arts Theater and Roxas Boulevard shows.
+              </p>
+            </div>
+
+            {/* Metric 05 - Booking Dispatch */}
+            <div className="hud-telemetry-item">
+              <div className="hud-telemetry-indicator" />
+              <p className="hud-telemetry-label">// NEXT TOUR WINDOW</p>
+              <h3 className="hud-telemetry-value">Q4 TOUR</h3>
+              <p className="hud-telemetry-desc">
+                Open booking calendar for cultural festivals, vintage hall performances & auditorium recitals.
               </p>
               <a
                 href={LINKS.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-primary"
+                className="jeepney-badge"
+                style={{ marginTop: "1rem", textDecoration: "none" }}
               >
-                Contact via Facebook
+                Inquire Tour Dates &rarr;
+              </a>
+            </div>
+
+            {/* Metric 06 - Archival Status */}
+            <div className="hud-telemetry-item">
+              <div className="hud-telemetry-indicator" />
+              <p className="hud-telemetry-label">// ESCORT STATION STATUS</p>
+              <h3 className="hud-telemetry-value">OPERATIONAL</h3>
+              <p className="hud-telemetry-desc">
+                Transmitting nostalgic frequencies 24/7 across the archipelago with zero corporate filters.
+              </p>
+              <a
+                href={LINKS.spotify}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="jeepney-badge"
+                style={{ marginTop: "1rem", textDecoration: "none" }}
+              >
+                <SpotifyIcon /> Stream Master Reel
               </a>
             </div>
           </div>

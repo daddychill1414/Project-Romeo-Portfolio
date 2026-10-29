@@ -24,13 +24,18 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         {/* Google Fonts are loaded via @import in globals.css */}
-        {/* GSAP CDN */}
+        {/* GSAP & ScrollTrigger CDN */}
         <script
           src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
           defer
         />
         <script
           src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+          defer
+        />
+        {/* Lenis Smooth Scroll CDN */}
+        <script
+          src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"
           defer
         />
       </head>
